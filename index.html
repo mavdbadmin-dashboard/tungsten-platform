@@ -1,0 +1,1938 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Mining Intelligence Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg-primary: #0A0F1A;
+  --bg-secondary: #111827;
+  --bg-card: #1F2937;
+  --bg-card-hover: #253347;
+  --border: #374151;
+  --border-light: #4B5563;
+  --text-primary: #F9FAFB;
+  --text-secondary: #9CA3AF;
+  --text-muted: #6B7280;
+  --blue: #3B82F6;
+  --blue-glow: rgba(59, 130, 246, 0.3);
+  --green: #10B981;
+  --green-glow: rgba(16, 185, 129, 0.2);
+  --amber: #F59E0B;
+  --amber-glow: rgba(245, 158, 11, 0.2);
+  --red: #EF4444;
+  --red-glow: rgba(239, 68, 68, 0.2);
+  --cyan: #06B6D4;
+  --purple: #8B5CF6;
+  --sidebar-width: 72px;
+  --header-height: 64px;
+}
+
+html { font-size: 14px; }
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-secondary); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--border-light); }
+
+/* ─── SIDEBAR ─── */
+.sidebar {
+  position: fixed; left: 0; top: 0; bottom: 0;
+  width: var(--sidebar-width);
+  background: var(--bg-secondary);
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  align-items: center;
+  padding: 16px 0;
+  z-index: 100;
+}
+.sidebar-logo {
+  width: 40px; height: 40px;
+  background: linear-gradient(135deg, var(--blue), var(--cyan));
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif;
+  font-weight: 800; font-size: 18px;
+  margin-bottom: 24px;
+  cursor: pointer;
+}
+.nav-items { display: flex; flex-direction: column; gap: 4px; flex: 1; width: 100%; padding: 0 8px; }
+.nav-item {
+  width: 56px; height: 48px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  color: var(--text-muted);
+}
+.nav-item:hover { background: var(--bg-card); color: var(--text-secondary); }
+.nav-item.active {
+  background: rgba(59, 130, 246, 0.15);
+  color: var(--blue);
+}
+.nav-item.active::before {
+  content: '';
+  position: absolute; left: -8px;
+  width: 3px; height: 24px;
+  background: var(--blue);
+  border-radius: 0 3px 3px 0;
+}
+.nav-item svg { width: 22px; height: 22px; }
+.nav-tooltip {
+  position: absolute; left: 64px; top: 50%; transform: translateY(-50%);
+  background: var(--bg-card); color: var(--text-primary);
+  padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 500;
+  white-space: nowrap; pointer-events: none; opacity: 0;
+  transition: opacity 0.15s; z-index: 200;
+  border: 1px solid var(--border);
+}
+.nav-item:hover .nav-tooltip { opacity: 1; }
+
+/* ─── HEADER ─── */
+.header {
+  position: fixed; top: 0; left: var(--sidebar-width); right: 0;
+  height: var(--header-height);
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 24px;
+  z-index: 90;
+}
+.header-left { display: flex; align-items: center; gap: 16px; }
+.header-title {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700; font-size: 18px;
+  background: linear-gradient(135deg, var(--text-primary), var(--blue));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.header-subtitle { font-size: 11px; color: var(--text-muted); letter-spacing: 2px; text-transform: uppercase; }
+.header-right { display: flex; align-items: center; gap: 16px; }
+.header-time { font-size: 12px; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+.status-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--green);
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+@keyframes pulse-dot {
+  0%, 100% { box-shadow: 0 0 0 0 var(--green-glow); }
+  50% { box-shadow: 0 0 0 6px transparent; }
+}
+.header-badge {
+  padding: 4px 10px; border-radius: 20px;
+  font-size: 11px; font-weight: 600;
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--green);
+  display: flex; align-items: center; gap: 6px;
+}
+
+/* ─── MAIN CONTENT ─── */
+.main {
+  margin-left: var(--sidebar-width);
+  margin-top: var(--header-height);
+  height: calc(100vh - var(--header-height));
+  overflow: hidden;
+  position: relative;
+}
+.page {
+  position: absolute; inset: 0;
+  padding: 20px 24px;
+  overflow-y: auto;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+  pointer-events: none;
+}
+.page.active {
+  opacity: 1; transform: translateY(0);
+  pointer-events: all;
+}
+
+/* ─── METRICS BAR ─── */
+.metrics-bar {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.metric-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.25s;
+}
+.metric-card:hover {
+  border-color: var(--blue);
+  box-shadow: 0 0 20px var(--blue-glow);
+  transform: translateY(-2px);
+}
+.metric-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--blue), transparent);
+}
+.metric-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+.metric-value { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 700; }
+.metric-value.blue { color: var(--blue); }
+.metric-value.green { color: var(--green); }
+.metric-value.amber { color: var(--amber); }
+.metric-change { font-size: 11px; color: var(--green); margin-top: 4px; }
+
+/* ─── CARDS / PANELS ─── */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+.card-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px;
+}
+.card-title {
+  font-family: 'Syne', sans-serif;
+  font-weight: 600; font-size: 15px;
+}
+.card-badge {
+  font-size: 10px; padding: 3px 8px; border-radius: 12px;
+  text-transform: uppercase; letter-spacing: 1px; font-weight: 600;
+}
+.badge-live { background: rgba(16,185,129,0.15); color: var(--green); }
+.badge-ai { background: rgba(59,130,246,0.15); color: var(--blue); }
+
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.grid-2-1 { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; }
+.grid-1-2 { display: grid; grid-template-columns: 1fr 2fr; gap: 16px; }
+.grid-3-1 { display: grid; grid-template-columns: 3fr 1fr; gap: 16px; }
+
+/* ─── SECTION TITLE ─── */
+.section-title {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700; font-size: 20px;
+  margin-bottom: 16px;
+  display: flex; align-items: center; gap: 10px;
+}
+.section-title svg { width: 20px; height: 20px; color: var(--blue); }
+
+/* ─── GEOLOGICAL MAP ─── */
+.geo-map {
+  position: relative;
+  width: 100%; height: 440px;
+  background:
+    radial-gradient(ellipse at 35% 40%, rgba(16,185,129,0.18) 0%, transparent 50%),
+    radial-gradient(ellipse at 65% 60%, rgba(245,158,11,0.12) 0%, transparent 45%),
+    radial-gradient(ellipse at 50% 30%, rgba(59,130,246,0.1) 0%, transparent 55%),
+    linear-gradient(180deg, #0c1420 0%, #111d2e 100%);
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+/* Topo lines */
+.geo-map::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    repeating-conic-gradient(from 0deg at 35% 40%, transparent 0deg, rgba(16,185,129,0.06) 1deg, transparent 2deg) ,
+    repeating-conic-gradient(from 0deg at 65% 55%, transparent 0deg, rgba(245,158,11,0.05) 1deg, transparent 2deg);
+  opacity: 0.7;
+}
+.topo-line {
+  position: absolute;
+  border: 1px solid rgba(59,130,246,0.08);
+  border-radius: 50%;
+}
+.drill-target {
+  position: absolute;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s;
+  z-index: 5;
+}
+.drill-target::before {
+  content: '';
+  position: absolute; inset: -4px;
+  border-radius: 50%;
+  border: 1px solid;
+  animation: target-pulse 2.5s ease-in-out infinite;
+  opacity: 0.5;
+}
+.drill-target.high { background: var(--green); border-color: var(--green); }
+.drill-target.high::before { border-color: var(--green); }
+.drill-target.medium { background: var(--amber); border-color: var(--amber); }
+.drill-target.medium::before { border-color: var(--amber); }
+.drill-target.low { background: var(--blue); border-color: var(--blue); }
+.drill-target.low::before { border-color: var(--blue); }
+.drill-target:hover { transform: scale(1.8); z-index: 10; }
+.drill-target .target-label {
+  position: absolute; top: -28px; left: 50%; transform: translateX(-50%);
+  font-size: 10px; white-space: nowrap;
+  background: var(--bg-card); padding: 2px 8px; border-radius: 4px;
+  border: 1px solid var(--border);
+  opacity: 0; transition: opacity 0.2s;
+}
+.drill-target:hover .target-label { opacity: 1; }
+
+@keyframes target-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.5; }
+  50% { transform: scale(1.8); opacity: 0; }
+}
+
+/* Grid overlay on map */
+.grid-overlay {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(59,130,246,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59,130,246,0.05) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+.map-coords {
+  position: absolute; bottom: 8px; left: 12px;
+  font-size: 10px; color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.map-legend {
+  position: absolute; top: 12px; right: 12px;
+  background: rgba(10,15,26,0.85);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 11px;
+}
+.legend-item { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+.legend-item:last-child { margin-bottom: 0; }
+.legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+.map-scale {
+  position: absolute; bottom: 12px; right: 12px;
+  display: flex; align-items: center; gap: 4px;
+  font-size: 10px; color: var(--text-muted);
+}
+.scale-bar { width: 60px; height: 2px; background: var(--text-muted); }
+
+/* ─── GEO SIDEBAR ─── */
+.geo-sidebar { font-size: 12px; }
+.geo-data-row {
+  display: flex; justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+.geo-data-row:last-child { border-bottom: none; }
+.geo-data-label { color: var(--text-muted); }
+.geo-data-value { color: var(--text-primary); font-weight: 500; }
+.ai-recommendation {
+  background: rgba(59,130,246,0.1);
+  border: 1px solid rgba(59,130,246,0.3);
+  border-radius: 10px;
+  padding: 16px;
+  margin-top: 16px;
+}
+.ai-rec-header {
+  font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px;
+  color: var(--blue); margin-bottom: 8px; font-weight: 600;
+  display: flex; align-items: center; gap: 6px;
+}
+.ai-rec-text { font-size: 13px; line-height: 1.5; }
+
+/* ─── TABLE ─── */
+.data-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.data-table thead th {
+  text-align: left;
+  padding: 10px 12px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 10px; font-weight: 600;
+  border-bottom: 1px solid var(--border);
+}
+.data-table tbody td {
+  padding: 12px;
+  border-bottom: 1px solid rgba(55,65,81,0.5);
+  font-variant-numeric: tabular-nums;
+}
+.data-table tbody tr { transition: background 0.15s; }
+.data-table tbody tr:hover { background: rgba(59,130,246,0.05); }
+.risk-badge {
+  display: inline-block;
+  padding: 2px 8px; border-radius: 10px;
+  font-size: 10px; font-weight: 600; text-transform: uppercase;
+}
+.risk-low { background: rgba(16,185,129,0.15); color: var(--green); }
+.risk-medium { background: rgba(245,158,11,0.15); color: var(--amber); }
+.risk-high { background: rgba(239,68,68,0.15); color: var(--red); }
+.score-bar {
+  width: 60px; height: 6px; background: var(--bg-secondary);
+  border-radius: 3px; overflow: hidden; display: inline-block; vertical-align: middle; margin-left: 8px;
+}
+.score-bar-fill { height: 100%; border-radius: 3px; background: var(--green); }
+
+/* ─── COST CALCULATOR ─── */
+.cost-calc {
+  background: linear-gradient(135deg, rgba(16,185,129,0.08), rgba(59,130,246,0.08));
+  border: 1px solid rgba(16,185,129,0.3);
+  border-radius: 12px; padding: 24px;
+}
+.cost-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.cost-label { color: var(--text-secondary); font-size: 13px; }
+.cost-value { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 700; }
+.cost-arrow { font-size: 20px; color: var(--green); margin: 0 16px; }
+.savings-highlight {
+  text-align: center; padding: 16px;
+  border-top: 1px solid rgba(16,185,129,0.2);
+  margin-top: 12px;
+}
+.savings-amount {
+  font-family: 'Syne', sans-serif;
+  font-size: 36px; font-weight: 800; color: var(--green);
+}
+.savings-pct { font-size: 14px; color: var(--green); margin-top: 4px; }
+
+/* ─── GAUGES ─── */
+.gauge-container {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 16px;
+}
+.gauge {
+  width: 120px; height: 60px;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+.gauge-bg {
+  width: 120px; height: 60px;
+  border-radius: 60px 60px 0 0;
+  background: var(--bg-secondary);
+  border: 3px solid var(--border);
+  border-bottom: none;
+  position: absolute;
+}
+.gauge-fill {
+  width: 120px; height: 60px;
+  border-radius: 60px 60px 0 0;
+  position: absolute;
+  transform-origin: center bottom;
+  border: 3px solid;
+  border-bottom: none;
+  clip-path: polygon(0% 100%, 100% 100%, 100% 0%, 0% 0%);
+}
+.gauge-needle {
+  position: absolute;
+  bottom: 0; left: 50%;
+  width: 2px; height: 52px;
+  background: var(--text-primary);
+  transform-origin: bottom center;
+  transition: transform 1.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  border-radius: 1px;
+  z-index: 2;
+}
+.gauge-needle::after {
+  content: '';
+  position: absolute; bottom: -4px; left: -4px;
+  width: 10px; height: 10px;
+  background: var(--text-primary);
+  border-radius: 50%;
+}
+.gauge-value { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 700; }
+.gauge-label { font-size: 11px; color: var(--text-muted); }
+
+/* ─── SENSOR FEED ─── */
+.sensor-feed {
+  font-size: 12px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+.sensor-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(55,65,81,0.3);
+  animation: sensor-in 0.4s ease-out;
+}
+@keyframes sensor-in {
+  from { opacity: 0; transform: translateX(-10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+.sensor-time { color: var(--text-muted); font-variant-numeric: tabular-nums; width: 65px; }
+.sensor-type { color: var(--blue); width: 80px; font-weight: 500; }
+.sensor-val { color: var(--text-primary); font-weight: 500; }
+
+/* ─── ALERT PANEL ─── */
+.alert-panel { margin-top: 16px; }
+.alert-item {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  font-size: 12px;
+}
+.alert-warning { background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.25); }
+.alert-info { background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.25); }
+.alert-success { background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.25); }
+.alert-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+.alert-text { line-height: 1.5; }
+.alert-title { font-weight: 600; margin-bottom: 2px; }
+
+/* ─── DEPTH VIZ ─── */
+.depth-viz {
+  position: relative;
+  width: 60px;
+  height: 300px;
+  background: linear-gradient(180deg, #1a2332, #0d1821);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+.depth-marker {
+  position: absolute;
+  left: 0; right: 0;
+  font-size: 8px; color: var(--text-muted);
+  border-top: 1px dashed rgba(75,85,99,0.4);
+  padding: 2px 4px;
+}
+.depth-bit {
+  position: absolute;
+  left: 50%; transform: translateX(-50%);
+  width: 12px; height: 12px;
+  background: var(--amber);
+  border-radius: 50%;
+  box-shadow: 0 0 12px var(--amber-glow);
+  transition: top 2s ease;
+}
+.depth-progress {
+  position: absolute; left: 0; right: 0; top: 0;
+  background: linear-gradient(180deg, rgba(59,130,246,0.15), rgba(59,130,246,0.05));
+  transition: height 2s ease;
+}
+
+/* ─── ESG ─── */
+.esg-score-ring {
+  width: 140px; height: 140px;
+  border-radius: 50%;
+  background: conic-gradient(var(--green) 0deg 316deg, var(--bg-secondary) 316deg 360deg);
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+}
+.esg-score-inner {
+  width: 110px; height: 110px;
+  border-radius: 50%;
+  background: var(--bg-card);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.esg-score-value { font-family: 'Syne', sans-serif; font-size: 32px; font-weight: 700; color: var(--green); }
+.esg-score-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+.compliance-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(55,65,81,0.4);
+  font-size: 13px;
+}
+.compliance-item:last-child { border-bottom: none; }
+.check-icon { color: var(--green); font-size: 16px; }
+
+/* ─── CHART ─── */
+.chart-area {
+  position: relative;
+  width: 100%; height: 250px;
+  overflow: hidden;
+}
+.chart-svg { width: 100%; height: 100%; }
+
+/* ─── SUPPLY INDICATOR ─── */
+.supply-bar {
+  width: 100%; height: 24px;
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 8px 0;
+}
+.supply-fill {
+  height: 100%;
+  border-radius: 12px;
+  display: flex; align-items: center; padding-left: 12px;
+  font-size: 11px; font-weight: 600;
+}
+
+/* ─── DIGITAL TWIN ─── */
+.mine-3d {
+  perspective: 1200px;
+  width: 100%; height: 420px;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(180deg, #0c1420 0%, #0a1018 100%);
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+.mine-scene {
+  position: absolute; inset: 0;
+  transform-style: preserve-3d;
+  transform: rotateX(55deg) rotateZ(-30deg);
+  top: 60%;
+  left: 50%;
+}
+.mine-layer {
+  position: absolute;
+  transform-style: preserve-3d;
+  left: -150px; top: -100px;
+}
+.mine-surface {
+  width: 300px; height: 200px;
+  background: linear-gradient(135deg, #1a3a2a, #2d4a3a, #1a3a2a);
+  border: 1px solid rgba(16,185,129,0.2);
+  transform: translateZ(0px);
+  border-radius: 4px;
+}
+.mine-level {
+  position: absolute;
+  width: 280px; height: 180px;
+  left: 10px; top: 10px;
+  border: 1px solid rgba(59,130,246,0.15);
+  border-radius: 3px;
+}
+.mine-level-1 { transform: translateZ(-30px); background: rgba(26,35,50,0.9); }
+.mine-level-2 { transform: translateZ(-60px); background: rgba(20,28,42,0.9); }
+.mine-level-3 { transform: translateZ(-90px); background: rgba(15,22,35,0.9); }
+.mine-tunnel {
+  position: absolute;
+  background: rgba(59,130,246,0.1);
+  border: 1px solid rgba(59,130,246,0.2);
+  border-radius: 2px;
+}
+.mine-sensor-3d {
+  position: absolute;
+  width: 6px; height: 6px;
+  background: var(--cyan);
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgba(6,182,212,0.6);
+  animation: sensor-blink 2s ease-in-out infinite;
+}
+@keyframes sensor-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+.data-flow-line {
+  position: absolute;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+  animation: data-flow 3s linear infinite;
+}
+@keyframes data-flow {
+  0% { opacity: 0; transform: translateX(-20px); }
+  50% { opacity: 1; }
+  100% { opacity: 0; transform: translateX(20px); }
+}
+.twin-label {
+  position: absolute;
+  font-size: 10px;
+  color: var(--text-muted);
+  padding: 2px 6px;
+  background: rgba(10,15,26,0.7);
+  border-radius: 3px;
+  border: 1px solid var(--border);
+}
+.cross-section {
+  position: relative;
+  width: 100%; height: 350px;
+  background: linear-gradient(180deg,
+    #1a3a2a 0%, #1a3a2a 8%,
+    #1a2a3a 8%, #1a2a3a 30%,
+    #1a2030 30%, #1a2030 55%,
+    #15192a 55%, #15192a 75%,
+    #101520 75%, #101520 100%);
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+.cs-label {
+  position: absolute;
+  font-size: 10px;
+  color: var(--text-muted);
+  right: 12px;
+}
+.cs-tunnel {
+  position: absolute;
+  background: rgba(31,41,55,0.8);
+  border: 1px solid rgba(59,130,246,0.2);
+  border-radius: 4px;
+}
+.cs-ore {
+  position: absolute;
+  background: linear-gradient(135deg, rgba(245,158,11,0.4), rgba(245,158,11,0.1));
+  border: 1px solid rgba(245,158,11,0.3);
+  border-radius: 3px;
+}
+.cs-sensor {
+  position: absolute;
+  width: 8px; height: 8px;
+  background: var(--cyan);
+  border-radius: 50%;
+  box-shadow: 0 0 6px rgba(6,182,212,0.5);
+}
+
+/* ─── FOOTER ─── */
+.footer-watermark {
+  text-align: center;
+  padding: 16px;
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+
+/* ─── PROGRESS BAR ─── */
+.progress-bar {
+  width: 100%; height: 8px;
+  background: var(--bg-secondary);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 1.5s ease;
+}
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 1200px) {
+  .metrics-bar { grid-template-columns: repeat(3, 1fr); }
+  .grid-2-1, .grid-3-1 { grid-template-columns: 1fr; }
+  .grid-3 { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 768px) {
+  .sidebar { width: 56px; }
+  .main { margin-left: 56px; }
+  .metrics-bar { grid-template-columns: repeat(2, 1fr); }
+  .grid-2 { grid-template-columns: 1fr; }
+  .header-title { font-size: 14px; }
+}
+
+/* ─── ANIMATION UTILITIES ─── */
+.animate-in {
+  animation: fadeUp 0.5s ease-out forwards;
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.stagger-1 { animation-delay: 0.05s; }
+.stagger-2 { animation-delay: 0.1s; }
+.stagger-3 { animation-delay: 0.15s; }
+.stagger-4 { animation-delay: 0.2s; }
+.stagger-5 { animation-delay: 0.25s; }
+.stagger-6 { animation-delay: 0.3s; }
+
+/* Scrolling ticker */
+.ticker {
+  overflow: hidden;
+  white-space: nowrap;
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 6px 0;
+  margin-bottom: 16px;
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+.ticker-content {
+  display: inline-block;
+  animation: ticker-scroll 40s linear infinite;
+}
+@keyframes ticker-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.ticker-item { display: inline; margin-right: 40px; }
+.ticker-up { color: var(--green); }
+.ticker-down { color: var(--red); }
+
+/* Shimmer effect */
+.shimmer {
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.03), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 3s ease-in-out infinite;
+}
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-logo" onclick="showPage(0)">W</div>
+  <div class="nav-items">
+    <div class="nav-item active" onclick="showPage(0)" data-page="0">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      <span class="nav-tooltip">Dashboard</span>
+    </div>
+    <div class="nav-item" onclick="showPage(1)" data-page="1">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+      <span class="nav-tooltip">Geological Intelligence</span>
+    </div>
+    <div class="nav-item" onclick="showPage(2)" data-page="2">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>
+      <span class="nav-tooltip">Drill Optimization</span>
+    </div>
+    <div class="nav-item" onclick="showPage(3)" data-page="3">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+      <span class="nav-tooltip">Operations Monitor</span>
+    </div>
+    <div class="nav-item" onclick="showPage(4)" data-page="4">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <span class="nav-tooltip">Environmental &amp; Compliance</span>
+    </div>
+    <div class="nav-item" onclick="showPage(5)" data-page="5">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 6l-9.5 9.5-5-5L1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+      <span class="nav-tooltip">Market Intelligence</span>
+    </div>
+    <div class="nav-item" onclick="showPage(6)" data-page="6">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+      <span class="nav-tooltip">Digital Twin</span>
+    </div>
+  </div>
+  <div class="nav-item" style="margin-top: auto; color: var(--text-muted);">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+  </div>
+</nav>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-left">
+    <div>
+      <div class="header-title">TUNGSTEN RESERVE CORP</div>
+      <div class="header-subtitle">AI Mining Intelligence Platform</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="header-badge"><span class="status-dot"></span> SYSTEM ONLINE</div>
+    <div class="header-time" id="headerTime">2026-11-10 13:18:42 UTC</div>
+  </div>
+</header>
+
+<!-- MAIN -->
+<main class="main">
+
+<!-- ═══════════ PAGE 0: DASHBOARD ═══════════ -->
+<div class="page active" id="page-0">
+  <div class="ticker">
+    <div class="ticker-content">
+      <span class="ticker-item">APT Mid (European): <strong>$325/MTU</strong> <span class="ticker-up">▲ 3.2%</span></span>
+      <span class="ticker-item">FeW 70% (FOB China): <strong>$42.50/kg</strong> <span class="ticker-up">▲ 1.8%</span></span>
+      <span class="ticker-item">WO₃ Concentrate: <strong>$310/MTU</strong> <span class="ticker-up">▲ 2.1%</span></span>
+      <span class="ticker-item">MAX Mine — Drill Rig A: <strong>847m depth</strong> <span class="ticker-up">▲ ON TARGET</span></span>
+      <span class="ticker-item">Jersey-Emerald — AI Score: <strong>94.7%</strong> <span class="ticker-up">▲ HIGH CONFIDENCE</span></span>
+      <span class="ticker-item">Sensor Network: <strong>1,247 nodes active</strong> <span class="ticker-up">✓ NOMINAL</span></span>
+      <span class="ticker-item">APT Mid (European): <strong>$325/MTU</strong> <span class="ticker-up">▲ 3.2%</span></span>
+      <span class="ticker-item">FeW 70% (FOB China): <strong>$42.50/kg</strong> <span class="ticker-up">▲ 1.8%</span></span>
+      <span class="ticker-item">WO₃ Concentrate: <strong>$310/MTU</strong> <span class="ticker-up">▲ 2.1%</span></span>
+      <span class="ticker-item">MAX Mine — Drill Rig A: <strong>847m depth</strong> <span class="ticker-up">▲ ON TARGET</span></span>
+      <span class="ticker-item">Jersey-Emerald — AI Score: <strong>94.7%</strong> <span class="ticker-up">▲ HIGH CONFIDENCE</span></span>
+      <span class="ticker-item">Sensor Network: <strong>1,247 nodes active</strong> <span class="ticker-up">✓ NOMINAL</span></span>
+    </div>
+  </div>
+
+  <div class="metrics-bar">
+    <div class="metric-card animate-in stagger-1">
+      <div class="metric-label">Active Sites</div>
+      <div class="metric-value blue">3</div>
+      <div class="metric-change">MAX · Jersey-Emerald · Cantung</div>
+    </div>
+    <div class="metric-card animate-in stagger-2">
+      <div class="metric-label">Drill Targets Identified</div>
+      <div class="metric-value blue" id="metricTargets">47</div>
+      <div class="metric-change">▲ 12 new this quarter</div>
+    </div>
+    <div class="metric-card animate-in stagger-3">
+      <div class="metric-label">Prediction Accuracy</div>
+      <div class="metric-value green">94.7%</div>
+      <div class="metric-change">▲ 2.3% vs traditional methods</div>
+    </div>
+    <div class="metric-card animate-in stagger-4">
+      <div class="metric-label">Cost Reduction</div>
+      <div class="metric-value green">38%</div>
+      <div class="metric-change">$1.6M saved per campaign</div>
+    </div>
+    <div class="metric-card animate-in stagger-5">
+      <div class="metric-label">Sensor Nodes Active</div>
+      <div class="metric-value amber" id="metricSensors">1,247</div>
+      <div class="metric-change">▲ All nodes reporting</div>
+    </div>
+    <div class="metric-card animate-in stagger-6">
+      <div class="metric-label">Environmental Compliance</div>
+      <div class="metric-value green">100%</div>
+      <div class="metric-change">✓ All regulations met</div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">AI Site Performance — Last 30 Days</span>
+        <span class="card-badge badge-ai">AI POWERED</span>
+      </div>
+      <div class="chart-area">
+        <svg class="chart-svg" viewBox="0 0 600 200" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="rgba(59,130,246,0.3)"/>
+              <stop offset="100%" stop-color="rgba(59,130,246,0)"/>
+            </linearGradient>
+          </defs>
+          <!-- Grid lines -->
+          <line x1="0" y1="50" x2="600" y2="50" stroke="rgba(75,85,99,0.2)" stroke-width="1"/>
+          <line x1="0" y1="100" x2="600" y2="100" stroke="rgba(75,85,99,0.2)" stroke-width="1"/>
+          <line x1="0" y1="150" x2="600" y2="150" stroke="rgba(75,85,99,0.2)" stroke-width="1"/>
+          <!-- Area -->
+          <path d="M0,180 C20,170 40,160 60,155 C80,150 100,148 120,140 C140,132 160,128 180,120 C200,112 220,115 240,108 C260,100 280,95 300,88 C320,82 340,78 360,72 C380,65 400,60 420,55 C440,52 460,48 480,42 C500,38 520,35 540,30 C560,28 580,25 600,20 L600,200 L0,200 Z" fill="url(#chartGrad)"/>
+          <!-- Line -->
+          <path d="M0,180 C20,170 40,160 60,155 C80,150 100,148 120,140 C140,132 160,128 180,120 C200,112 220,115 240,108 C260,100 280,95 300,88 C320,82 340,78 360,72 C380,65 400,60 420,55 C440,52 460,48 480,42 C500,38 520,35 540,30 C560,28 580,25 600,20" fill="none" stroke="var(--blue)" stroke-width="2"/>
+          <!-- Labels -->
+          <text x="10" y="47" fill="var(--text-muted)" font-size="10">95%</text>
+          <text x="10" y="97" fill="var(--text-muted)" font-size="10">90%</text>
+          <text x="10" y="147" fill="var(--text-muted)" font-size="10">85%</text>
+        </svg>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Active Operations Feed</span>
+        <span class="card-badge badge-live">● LIVE</span>
+      </div>
+      <div class="sensor-feed" id="dashFeed">
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-3">
+    <div class="card">
+      <div class="card-header"><span class="card-title">MAX Mine</span></div>
+      <div style="font-size:12px;color:var(--text-secondary);margin-bottom:12px;">British Columbia, Canada</div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+        <span style="font-size:12px;color:var(--text-muted)">Drilling Progress</span>
+        <span style="font-size:12px;color:var(--green)">847m / 1,100m</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" style="width:77%;background:var(--green)"></div></div>
+      <div style="margin-top:12px;font-size:12px;color:var(--text-muted)">Status: <span style="color:var(--green)">Active Drilling</span></div>
+      <div style="margin-top:6px;font-size:12px;color:var(--text-muted)">WO₃ Grade: <span style="color:var(--amber)">1.24%</span></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span class="card-title">Jersey-Emerald</span></div>
+      <div style="font-size:12px;color:var(--text-secondary);margin-bottom:12px;">British Columbia, Canada</div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+        <span style="font-size:12px;color:var(--text-muted)">AI Analysis</span>
+        <span style="font-size:12px;color:var(--blue)">Phase 2 — Target ID</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" style="width:62%;background:var(--blue)"></div></div>
+      <div style="margin-top:12px;font-size:12px;color:var(--text-muted)">Status: <span style="color:var(--blue)">Target Evaluation</span></div>
+      <div style="margin-top:6px;font-size:12px;color:var(--text-muted)">Targets ID'd: <span style="color:var(--amber)">23</span></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span class="card-title">Cantung</span></div>
+      <div style="font-size:12px;color:var(--text-secondary);margin-bottom:12px;">Northwest Territories, Canada</div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+        <span style="font-size:12px;color:var(--text-muted)">Remediation</span>
+        <span style="font-size:12px;color:var(--green)">94% Complete</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" style="width:94%;background:var(--green)"></div></div>
+      <div style="margin-top:12px;font-size:12px;color:var(--text-muted)">Status: <span style="color:var(--green)">Environmental Monitoring</span></div>
+      <div style="margin-top:6px;font-size:12px;color:var(--text-muted)">Sensor Nodes: <span style="color:var(--amber)">412</span></div>
+    </div>
+  </div>
+
+  <div class="footer-watermark">POWERED BY TUNGSTEN AI™ INTELLIGENCE PLATFORM</div>
+</div>
+
+<!-- ═══════════ PAGE 1: GEOLOGICAL INTELLIGENCE ═══════════ -->
+<div class="page" id="page-1">
+  <div class="section-title">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/></svg>
+    Geological Intelligence Module
+  </div>
+
+  <div class="grid-2-1">
+    <div class="card" style="padding:0;overflow:hidden;">
+      <div class="geo-map" id="geoMap">
+        <div class="grid-overlay"></div>
+
+        <!-- Topo lines (ellipses) -->
+        <div class="topo-line" style="width:280px;height:200px;top:15%;left:15%"></div>
+        <div class="topo-line" style="width:220px;height:160px;top:18%;left:18%"></div>
+        <div class="topo-line" style="width:160px;height:120px;top:22%;left:22%"></div>
+        <div class="topo-line" style="width:100px;height:80px;top:26%;left:26%"></div>
+        <div class="topo-line" style="width:240px;height:180px;top:40%;left:50%"></div>
+        <div class="topo-line" style="width:180px;height:130px;top:44%;left:53%"></div>
+        <div class="topo-line" style="width:120px;height:80px;top:48%;left:56%"></div>
+
+        <!-- Drill targets -->
+        <div class="drill-target high" style="top:28%;left:28%"><span class="target-label">B-7 · 94.2% · WO₃ 1.32%</span></div>
+        <div class="drill-target high" style="top:32%;left:24%"><span class="target-label">B-5 · 91.8% · WO₃ 1.15%</span></div>
+        <div class="drill-target high" style="top:24%;left:32%"><span class="target-label">A-12 · 93.1% · WO₃ 1.28%</span></div>
+        <div class="drill-target high" style="top:35%;left:30%"><span class="target-label">B-9 · 89.4% · WO₃ 0.98%</span></div>
+        <div class="drill-target medium" style="top:42%;left:20%"><span class="target-label">C-3 · 76.3% · WO₃ 0.72%</span></div>
+        <div class="drill-target medium" style="top:38%;left:38%"><span class="target-label">C-8 · 71.2% · WO₃ 0.65%</span></div>
+        <div class="drill-target medium" style="top:50%;left:55%"><span class="target-label">D-2 · 68.4% · WO₃ 0.58%</span></div>
+        <div class="drill-target medium" style="top:48%;left:60%"><span class="target-label">D-5 · 73.1% · WO₃ 0.61%</span></div>
+        <div class="drill-target medium" style="top:55%;left:58%"><span class="target-label">D-9 · 65.7% · WO₃ 0.52%</span></div>
+        <div class="drill-target low" style="top:65%;left:70%"><span class="target-label">E-1 · 42.1% · WO₃ 0.31%</span></div>
+        <div class="drill-target low" style="top:60%;left:45%"><span class="target-label">E-4 · 38.9% · WO₃ 0.28%</span></div>
+        <div class="drill-target low" style="top:70%;left:35%"><span class="target-label">F-2 · 35.4% · WO₃ 0.22%</span></div>
+        <div class="drill-target high" style="top:20%;left:40%"><span class="target-label">A-8 · 90.6% · WO₃ 1.08%</span></div>
+        <div class="drill-target high" style="top:30%;left:35%"><span class="target-label">B-11 · 88.2% · WO₃ 0.95%</span></div>
+        <div class="drill-target medium" style="top:45%;left:42%"><span class="target-label">C-14 · 62.8% · WO₃ 0.48%</span></div>
+
+        <div class="map-legend">
+          <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div> High Confidence (&gt;85%)</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--amber)"></div> Medium (60-85%)</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--blue)"></div> Low (&lt;60%)</div>
+        </div>
+        <div class="map-coords" id="mapCoords">49.1547°N, 116.8432°W — Elev: 1,842m</div>
+        <div class="map-scale"><div class="scale-bar"></div> 500m</div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card geo-sidebar">
+        <div class="card-header">
+          <span class="card-title">Zone B-7 — Geological Data</span>
+        </div>
+        <div class="geo-data-row"><span class="geo-data-label">Rock Type</span><span class="geo-data-value">Skarn (Calc-silicate)</span></div>
+        <div class="geo-data-row"><span class="geo-data-label">Formation</span><span class="geo-data-value">Emerald-Dodger</span></div>
+        <div class="geo-data-row"><span class="geo-data-label">Est. Depth</span><span class="geo-data-value">340–420m</span></div>
+        <div class="geo-data-row"><span class="geo-data-label">Mineralization</span><span class="geo-data-value">Scheelite + Wolframite</span></div>
+        <div class="geo-data-row"><span class="geo-data-label">WO₃ Grade</span><span class="geo-data-value" style="color:var(--green)">1.32%</span></div>
+        <div class="geo-data-row"><span class="geo-data-label">Alteration</span><span class="geo-data-value">Garnet-pyroxene</span></div>
+        <div class="geo-data-row"><span class="geo-data-label">Structural</span><span class="geo-data-value">Fold hinge zone</span></div>
+        <div class="geo-data-row"><span class="geo-data-label">Magnetic Sig.</span><span class="geo-data-value">Strong anomaly</span></div>
+        <div class="geo-data-row"><span class="geo-data-label">Gravity</span><span class="geo-data-value">+2.4 mGal residual</span></div>
+        <div class="geo-data-row"><span class="geo-data-label">Last Updated</span><span class="geo-data-value" id="geoTimestamp">13:18:42</span></div>
+      </div>
+
+      <div class="ai-recommendation">
+        <div class="ai-rec-header">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          AI RECOMMENDATION
+        </div>
+        <div class="ai-rec-text">
+          <strong>Drill Zone B-7</strong> — 94.2% probability of WO₃ &gt; 0.5%<br><br>
+          Multi-sensor fusion analysis indicates high-grade scheelite mineralization at 340–420m depth within the Emerald-Dodger skarn formation. Geophysical signatures correlate with historical high-grade intercepts at Jersey-Emerald. Recommended drill azimuth: 225° at -65° dip.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-watermark">POWERED BY TUNGSTEN AI™ INTELLIGENCE PLATFORM</div>
+</div>
+
+<!-- ═══════════ PAGE 2: DRILL SITE OPTIMIZATION ═══════════ -->
+<div class="page" id="page-2">
+  <div class="section-title">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>
+    Drill Site Optimization
+  </div>
+
+  <div class="grid-3-1">
+    <div class="card" style="overflow-x:auto;">
+      <div class="card-header">
+        <span class="card-title">Proposed Drill Sites — Ranked by AI Score</span>
+        <span class="card-badge badge-ai">47 TARGETS</span>
+      </div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Site ID</th>
+            <th>Location</th>
+            <th>AI Score</th>
+            <th>Est. Depth</th>
+            <th>Pred. Grade</th>
+            <th>Cost Est.</th>
+            <th>Risk</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="color:var(--blue);font-weight:600">B-7</td>
+            <td>Jersey-Emerald NE</td>
+            <td>94.2% <div class="score-bar"><div class="score-bar-fill" style="width:94.2%;background:var(--green)"></div></div></td>
+            <td>340–420m</td>
+            <td style="color:var(--green)">WO₃ 1.32%</td>
+            <td>$285K</td>
+            <td><span class="risk-badge risk-low">Low</span></td>
+          </tr>
+          <tr>
+            <td style="color:var(--blue);font-weight:600">A-12</td>
+            <td>MAX Mine East</td>
+            <td>93.1% <div class="score-bar"><div class="score-bar-fill" style="width:93.1%;background:var(--green)"></div></div></td>
+            <td>280–360m</td>
+            <td style="color:var(--green)">WO₃ 1.28%</td>
+            <td>$310K</td>
+            <td><span class="risk-badge risk-low">Low</span></td>
+          </tr>
+          <tr>
+            <td style="color:var(--blue);font-weight:600">B-5</td>
+            <td>Jersey-Emerald SW</td>
+            <td>91.8% <div class="score-bar"><div class="score-bar-fill" style="width:91.8%;background:var(--green)"></div></div></td>
+            <td>300–380m</td>
+            <td style="color:var(--green)">WO₃ 1.15%</td>
+            <td>$265K</td>
+            <td><span class="risk-badge risk-low">Low</span></td>
+          </tr>
+          <tr>
+            <td style="color:var(--blue);font-weight:600">A-8</td>
+            <td>MAX Mine Central</td>
+            <td>90.6% <div class="score-bar"><div class="score-bar-fill" style="width:90.6%;background:var(--green)"></div></div></td>
+            <td>310–400m</td>
+            <td style="color:var(--green)">WO₃ 1.08%</td>
+            <td>$295K</td>
+            <td><span class="risk-badge risk-low">Low</span></td>
+          </tr>
+          <tr>
+            <td style="color:var(--blue);font-weight:600">B-9</td>
+            <td>Jersey-Emerald N</td>
+            <td>89.4% <div class="score-bar"><div class="score-bar-fill" style="width:89.4%;background:var(--green)"></div></div></td>
+            <td>360–440m</td>
+            <td style="color:var(--green)">WO₃ 0.98%</td>
+            <td>$340K</td>
+            <td><span class="risk-badge risk-medium">Med</span></td>
+          </tr>
+          <tr>
+            <td style="color:var(--blue);font-weight:600">B-11</td>
+            <td>Jersey-Emerald SE</td>
+            <td>88.2% <div class="score-bar"><div class="score-bar-fill" style="width:88.2%;background:var(--green)"></div></div></td>
+            <td>320–400m</td>
+            <td style="color:var(--green)">WO₃ 0.95%</td>
+            <td>$275K</td>
+            <td><span class="risk-badge risk-low">Low</span></td>
+          </tr>
+          <tr>
+            <td style="color:var(--blue);font-weight:600">C-3</td>
+            <td>Cantung Extension</td>
+            <td>76.3% <div class="score-bar"><div class="score-bar-fill" style="width:76.3%;background:var(--amber)"></div></div></td>
+            <td>420–520m</td>
+            <td style="color:var(--amber)">WO₃ 0.72%</td>
+            <td>$410K</td>
+            <td><span class="risk-badge risk-medium">Med</span></td>
+          </tr>
+          <tr>
+            <td style="color:var(--blue);font-weight:600">D-2</td>
+            <td>Jersey-Emerald Deep</td>
+            <td>68.4% <div class="score-bar"><div class="score-bar-fill" style="width:68.4%;background:var(--amber)"></div></div></td>
+            <td>500–620m</td>
+            <td style="color:var(--amber)">WO₃ 0.58%</td>
+            <td>$520K</td>
+            <td><span class="risk-badge risk-medium">Med</span></td>
+          </tr>
+          <tr>
+            <td style="color:var(--blue);font-weight:600">E-1</td>
+            <td>Cantung South</td>
+            <td>42.1% <div class="score-bar"><div class="score-bar-fill" style="width:42.1%;background:var(--blue)"></div></div></td>
+            <td>600–750m</td>
+            <td>WO₃ 0.31%</td>
+            <td>$680K</td>
+            <td><span class="risk-badge risk-high">High</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">Optimal Sequence</span></div>
+        <div style="font-size:12px;">
+          <div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border)">
+            <span style="background:var(--blue);color:white;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0">1</span>
+            <div><div style="font-weight:600">B-7</div><div style="font-size:10px;color:var(--text-muted)">Highest ROI target</div></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border)">
+            <span style="background:var(--blue);color:white;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0">2</span>
+            <div><div style="font-weight:600">A-12</div><div style="font-size:10px;color:var(--text-muted)">Adjacent — shared mobilization</div></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border)">
+            <span style="background:var(--blue);color:white;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0">3</span>
+            <div><div style="font-weight:600">B-5</div><div style="font-size:10px;color:var(--text-muted)">Cluster optimization</div></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border)">
+            <span style="background:var(--blue);color:white;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0">4</span>
+            <div><div style="font-weight:600">A-8</div><div style="font-size:10px;color:var(--text-muted)">MAX Mine infill</div></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;padding:8px 0;">
+            <span style="background:rgba(59,130,246,0.3);color:var(--blue);width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0">5</span>
+            <div><div style="font-weight:600">B-9</div><div style="font-size:10px;color:var(--text-muted)">Deeper extension test</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cost-calc">
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-muted);margin-bottom:16px;font-weight:600">Cost Optimization</div>
+        <div class="cost-row">
+          <span class="cost-label">Traditional</span>
+          <span class="cost-value" style="color:var(--red)">$4.2M</span>
+        </div>
+        <div style="text-align:center;font-size:18px;color:var(--text-muted);margin:4px 0">↓</div>
+        <div class="cost-row">
+          <span class="cost-label">AI-Optimized</span>
+          <span class="cost-value" style="color:var(--green)">$2.6M</span>
+        </div>
+        <div class="savings-highlight">
+          <div class="savings-amount">$1.6M</div>
+          <div class="savings-pct">38% Cost Reduction</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-watermark">POWERED BY TUNGSTEN AI™ INTELLIGENCE PLATFORM</div>
+</div>
+
+<!-- ═══════════ PAGE 3: OPERATIONS MONITOR ═══════════ -->
+<div class="page" id="page-3">
+  <div class="section-title">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+    Real-Time Operations Monitor
+    <span class="card-badge badge-live" style="margin-left:auto">● LIVE DATA</span>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Sensor Readings — MAX Mine Rig A</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;">
+        <div class="gauge-container">
+          <div class="gauge">
+            <div class="gauge-bg"></div>
+            <div class="gauge-needle" id="needle-temp" style="transform:rotate(-40deg)"></div>
+          </div>
+          <div class="gauge-value" id="val-temp" style="color:var(--amber)">142°C</div>
+          <div class="gauge-label">TEMPERATURE</div>
+        </div>
+        <div class="gauge-container">
+          <div class="gauge">
+            <div class="gauge-bg"></div>
+            <div class="gauge-needle" id="needle-pressure" style="transform:rotate(-20deg)"></div>
+          </div>
+          <div class="gauge-value" id="val-pressure" style="color:var(--blue)">2,847 PSI</div>
+          <div class="gauge-label">PRESSURE</div>
+        </div>
+        <div class="gauge-container">
+          <div class="gauge">
+            <div class="gauge-bg"></div>
+            <div class="gauge-needle" id="needle-rpm" style="transform:rotate(10deg)"></div>
+          </div>
+          <div class="gauge-value" id="val-rpm" style="color:var(--green)">124 RPM</div>
+          <div class="gauge-label">BIT RPM</div>
+        </div>
+        <div class="gauge-container">
+          <div class="gauge">
+            <div class="gauge-bg"></div>
+            <div class="gauge-needle" id="needle-torque" style="transform:rotate(-10deg)"></div>
+          </div>
+          <div class="gauge-value" id="val-torque" style="color:var(--cyan)">18.4 kN·m</div>
+          <div class="gauge-label">TORQUE</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Drilling Depth — Active Hole</span>
+      </div>
+      <div style="display:flex;gap:24px;align-items:flex-start;">
+        <div class="depth-viz" id="depthViz">
+          <div class="depth-progress" id="depthProgress" style="height:77%"></div>
+          <div class="depth-marker" style="top:0%">0m</div>
+          <div class="depth-marker" style="top:18%">200m</div>
+          <div class="depth-marker" style="top:36%">400m</div>
+          <div class="depth-marker" style="top:55%">600m</div>
+          <div class="depth-marker" style="top:73%">800m</div>
+          <div class="depth-marker" style="top:91%">1000m</div>
+          <div class="depth-bit" id="depthBit" style="top:73%"></div>
+        </div>
+        <div style="flex:1;font-size:12px;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div>
+              <div style="color:var(--text-muted);margin-bottom:4px">Current Depth</div>
+              <div style="font-family:'Syne';font-size:28px;font-weight:700;color:var(--blue)" id="currentDepth">847m</div>
+            </div>
+            <div>
+              <div style="color:var(--text-muted);margin-bottom:4px">Target Depth</div>
+              <div style="font-family:'Syne';font-size:28px;font-weight:700">1,100m</div>
+            </div>
+            <div>
+              <div style="color:var(--text-muted);margin-bottom:4px">Rate of Penetration</div>
+              <div style="font-size:18px;font-weight:600;color:var(--green)" id="ropVal">4.2 m/hr</div>
+            </div>
+            <div>
+              <div style="color:var(--text-muted);margin-bottom:4px">ETA to Target</div>
+              <div style="font-size:18px;font-weight:600;color:var(--amber)">~60 hrs</div>
+            </div>
+          </div>
+          <div style="margin-top:16px;">
+            <div style="color:var(--text-muted);margin-bottom:6px">Lithology at Depth</div>
+            <div style="display:flex;gap:4px;flex-wrap:wrap;">
+              <span style="background:rgba(59,130,246,0.15);color:var(--blue);padding:3px 8px;border-radius:6px;font-size:10px">Diorite Sill 0–180m</span>
+              <span style="background:rgba(245,158,11,0.15);color:var(--amber);padding:3px 8px;border-radius:6px;font-size:10px">Limestone 180–540m</span>
+              <span style="background:rgba(16,185,129,0.15);color:var(--green);padding:3px 8px;border-radius:6px;font-size:10px">Skarn 540–847m ← Current</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Live Sensor Feed</span>
+        <span class="card-badge badge-live">● STREAMING</span>
+      </div>
+      <div class="sensor-feed" id="sensorFeed"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">AI Alerts &amp; Recommendations</span>
+      </div>
+      <div class="alert-panel">
+        <div class="alert-item alert-warning">
+          <div class="alert-icon">⚠️</div>
+          <div>
+            <div class="alert-title alert-text">Anomaly Detected at 847m</div>
+            <div class="alert-text" style="color:var(--text-secondary)">Torque spike of +12% detected. AI recommends reducing WOB by 15% and adjusting mud weight to 1.32 sg. Probability of formation change: 78%.</div>
+          </div>
+        </div>
+        <div class="alert-item alert-info">
+          <div class="alert-icon">🤖</div>
+          <div>
+            <div class="alert-title alert-text">Mineralization Zone Approaching</div>
+            <div class="alert-text" style="color:var(--text-secondary)">Based on geophysical model, high-grade scheelite mineralization predicted at 860–920m. Recommend core sampling at 5m intervals.</div>
+          </div>
+        </div>
+        <div class="alert-item alert-success">
+          <div class="alert-icon">✅</div>
+          <div>
+            <div class="alert-title alert-text">Bit Performance Optimal</div>
+            <div class="alert-text" style="color:var(--text-secondary)">PDC bit wear at 34%. Estimated remaining life: 180m. No bit trip required for current target.</div>
+          </div>
+        </div>
+        <div class="alert-item alert-info">
+          <div class="alert-icon">📊</div>
+          <div>
+            <div class="alert-title alert-text">Cost Tracker</div>
+            <div class="alert-text" style="color:var(--text-secondary)">Current hole cost: $187K (budget: $285K). AI routing saved $42K vs. planned trajectory through limestone bypass.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-watermark">POWERED BY TUNGSTEN AI™ INTELLIGENCE PLATFORM</div>
+</div>
+
+<!-- ═══════════ PAGE 4: ENVIRONMENTAL & COMPLIANCE ═══════════ -->
+<div class="page" id="page-4">
+  <div class="section-title">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    Environmental &amp; Compliance Dashboard
+  </div>
+
+  <div class="grid-3">
+    <div class="card" style="display:flex;flex-direction:column;align-items:center;">
+      <div class="card-header" style="width:100%"><span class="card-title">ESG Score</span></div>
+      <div class="esg-score-ring" style="margin:16px 0">
+        <div class="esg-score-inner">
+          <div class="esg-score-value">88</div>
+          <div class="esg-score-label">Excellent</div>
+        </div>
+      </div>
+      <div style="width:100%;font-size:12px;margin-top:8px;">
+        <div style="display:flex;justify-content:space-between;padding:6px 0"><span style="color:var(--text-muted)">Environmental</span><span style="color:var(--green);font-weight:600">92/100</span></div>
+        <div style="display:flex;justify-content:space-between;padding:6px 0"><span style="color:var(--text-muted)">Social</span><span style="color:var(--green);font-weight:600">85/100</span></div>
+        <div style="display:flex;justify-content:space-between;padding:6px 0"><span style="color:var(--text-muted)">Governance</span><span style="color:var(--green);font-weight:600">87/100</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><span class="card-title">Emissions Monitoring</span></div>
+      <div style="font-size:12px;">
+        <div style="margin-bottom:12px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="color:var(--text-muted)">CO₂ Emissions</span><span style="color:var(--green)">12.4 tCO₂e/day</span></div>
+          <div class="progress-bar"><div class="progress-fill" style="width:31%;background:var(--green)"></div></div>
+          <div style="font-size:10px;color:var(--text-muted);margin-top:2px">31% of permitted limit (40 tCO₂e/day)</div>
+        </div>
+        <div style="margin-bottom:12px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="color:var(--text-muted)">Particulate Matter</span><span style="color:var(--green)">8.2 μg/m³</span></div>
+          <div class="progress-bar"><div class="progress-fill" style="width:22%;background:var(--green)"></div></div>
+          <div style="font-size:10px;color:var(--text-muted);margin-top:2px">22% of threshold (35 μg/m³)</div>
+        </div>
+        <div style="margin-bottom:12px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="color:var(--text-muted)">NOx Levels</span><span style="color:var(--green)">0.04 ppm</span></div>
+          <div class="progress-bar"><div class="progress-fill" style="width:18%;background:var(--green)"></div></div>
+          <div style="font-size:10px;color:var(--text-muted);margin-top:2px">18% of limit (0.21 ppm)</div>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="color:var(--text-muted)">Noise Level</span><span style="color:var(--green)">62 dB</span></div>
+          <div class="progress-bar"><div class="progress-fill" style="width:69%;background:var(--green)"></div></div>
+          <div style="font-size:10px;color:var(--text-muted);margin-top:2px">69% of limit (90 dB) at boundary</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><span class="card-title">Water Quality</span></div>
+      <div style="font-size:12px;">
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)">
+          <span style="color:var(--text-muted)">pH Level</span>
+          <span style="color:var(--green);font-weight:500">7.2 (Neutral)</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)">
+          <span style="color:var(--text-muted)">Turbidity</span>
+          <span style="color:var(--green);font-weight:500">2.1 NTU</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)">
+          <span style="color:var(--text-muted)">Dissolved O₂</span>
+          <span style="color:var(--green);font-weight:500">8.4 mg/L</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)">
+          <span style="color:var(--text-muted)">Heavy Metals</span>
+          <span style="color:var(--green);font-weight:500">Below Detection</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)">
+          <span style="color:var(--text-muted)">TSS</span>
+          <span style="color:var(--green);font-weight:500">4.8 mg/L</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;">
+          <span style="color:var(--text-muted)">Selenium</span>
+          <span style="color:var(--green);font-weight:500">&lt;0.001 mg/L</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header"><span class="card-title">Regulatory Compliance</span><span class="card-badge badge-live" style="background:rgba(16,185,129,0.15);color:var(--green)">100% COMPLIANT</span></div>
+      <div class="compliance-item"><span class="check-icon">✅</span> BC Mines Act Permit — Active (Exp. 2028-03-15)</div>
+      <div class="compliance-item"><span class="check-icon">✅</span> Environmental Management Plan — Approved</div>
+      <div class="compliance-item"><span class="check-icon">✅</span> Water Discharge License — Within limits</div>
+      <div class="compliance-item"><span class="check-icon">✅</span> Indigenous Community Consultation — Complete</div>
+      <div class="compliance-item"><span class="check-icon">✅</span> Wildlife Impact Assessment — Low Impact</div>
+      <div class="compliance-item"><span class="check-icon">✅</span> Reclamation Bond — Filed ($2.4M)</div>
+      <div class="compliance-item"><span class="check-icon">✅</span> Quarterly Environmental Report — Submitted (Q3 2026)</div>
+      <div class="compliance-item"><span class="check-icon">✅</span> Tailings Management Plan — Approved &amp; Monitored</div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span class="card-title">Automated Reporting</span></div>
+      <div style="font-size:12px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
+          <div>
+            <div style="font-weight:500">Daily Environmental Summary</div>
+            <div style="font-size:10px;color:var(--text-muted)">Auto-generated from 412 sensor nodes</div>
+          </div>
+          <span style="color:var(--green);font-size:11px">Sent 06:00</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
+          <div>
+            <div style="font-weight:500">Weekly Water Quality Report</div>
+            <div style="font-size:10px;color:var(--text-muted)">BC Ministry of Environment format</div>
+          </div>
+          <span style="color:var(--green);font-size:11px">Due Fri</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
+          <div>
+            <div style="font-weight:500">Monthly Emissions Report</div>
+            <div style="font-size:10px;color:var(--text-muted)">Carbon tracking & offsets</div>
+          </div>
+          <span style="color:var(--blue);font-size:11px">In Progress</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;">
+          <div>
+            <div style="font-weight:500">Quarterly ESG Dashboard</div>
+            <div style="font-size:10px;color:var(--text-muted)">Board & investor package</div>
+          </div>
+          <span style="color:var(--green);font-size:11px">Q3 Complete</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-watermark">POWERED BY TUNGSTEN AI™ INTELLIGENCE PLATFORM</div>
+</div>
+
+<!-- ═══════════ PAGE 5: MARKET INTELLIGENCE ═══════════ -->
+<div class="page" id="page-5">
+  <div class="section-title">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 6l-9.5 9.5-5-5L1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+    Market Intelligence
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">APT Tungsten Price (Mid European) — 10 Year</span>
+      <span class="card-badge badge-ai">9.4× INCREASE</span>
+    </div>
+    <div class="chart-area" style="height:280px">
+      <svg class="chart-svg" viewBox="0 0 800 240" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="aptGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="rgba(16,185,129,0.25)"/>
+            <stop offset="100%" stop-color="rgba(16,185,129,0)"/>
+          </linearGradient>
+        </defs>
+        <!-- Grid -->
+        <line x1="0" y1="48" x2="800" y2="48" stroke="rgba(75,85,99,0.15)" stroke-width="1"/>
+        <line x1="0" y1="96" x2="800" y2="96" stroke="rgba(75,85,99,0.15)" stroke-width="1"/>
+        <line x1="0" y1="144" x2="800" y2="144" stroke="rgba(75,85,99,0.15)" stroke-width="1"/>
+        <line x1="0" y1="192" x2="800" y2="192" stroke="rgba(75,85,99,0.15)" stroke-width="1"/>
+        <!-- Y-axis labels -->
+        <text x="8" y="44" fill="var(--text-muted)" font-size="9">$350</text>
+        <text x="8" y="92" fill="var(--text-muted)" font-size="9">$275</text>
+        <text x="8" y="140" fill="var(--text-muted)" font-size="9">$200</text>
+        <text x="8" y="188" fill="var(--text-muted)" font-size="9">$125</text>
+        <text x="8" y="228" fill="var(--text-muted)" font-size="9">$35</text>
+        <!-- X-axis labels -->
+        <text x="60" y="238" fill="var(--text-muted)" font-size="9">2016</text>
+        <text x="170" y="238" fill="var(--text-muted)" font-size="9">2018</text>
+        <text x="280" y="238" fill="var(--text-muted)" font-size="9">2020</text>
+        <text x="400" y="238" fill="var(--text-muted)" font-size="9">2022</text>
+        <text x="520" y="238" fill="var(--text-muted)" font-size="9">2024</text>
+        <text x="650" y="238" fill="var(--text-muted)" font-size="9">2026</text>
+        <!-- Area fill -->
+        <path d="M60,220 C100,218 140,216 180,215 C220,214 260,210 300,200 C340,185 370,175 400,170 C440,160 470,155 500,130 C530,110 550,95 580,75 C620,55 660,42 700,35 C730,30 760,28 780,25 L780,225 L60,225 Z" fill="url(#aptGrad)"/>
+        <!-- Price line -->
+        <path d="M60,220 C100,218 140,216 180,215 C220,214 260,210 300,200 C340,185 370,175 400,170 C440,160 470,155 500,130 C530,110 550,95 580,75 C620,55 660,42 700,35 C730,30 760,28 780,25" fill="none" stroke="var(--green)" stroke-width="2.5"/>
+        <!-- Current price dot -->
+        <circle cx="780" cy="25" r="5" fill="var(--green)">
+          <animate attributeName="r" values="4;6;4" dur="2s" repeatCount="indefinite"/>
+        </circle>
+        <!-- Price annotation -->
+        <text x="720" y="18" fill="var(--green)" font-size="12" font-weight="bold">$325/MTU</text>
+        <text x="60" y="216" fill="var(--text-muted)" font-size="10">$35/MTU</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="grid-3">
+    <div class="card">
+      <div class="card-header"><span class="card-title">Supply Concentration Risk</span></div>
+      <div style="text-align:center;margin-bottom:12px;">
+        <div style="font-family:'Syne';font-size:48px;font-weight:800;color:var(--red)">82%</div>
+        <div style="font-size:12px;color:var(--text-muted)">China's Share of Global Tungsten Supply</div>
+      </div>
+      <div class="supply-bar">
+        <div class="supply-fill" style="width:82%;background:linear-gradient(90deg,var(--red),var(--amber));">🇨🇳 China 82%</div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:8px;font-size:11px;">
+        <div style="flex:1;text-align:center;padding:6px;background:var(--bg-secondary);border-radius:6px">
+          <div style="color:var(--text-muted)">Vietnam</div><div style="font-weight:600">5%</div>
+        </div>
+        <div style="flex:1;text-align:center;padding:6px;background:var(--bg-secondary);border-radius:6px">
+          <div style="color:var(--text-muted)">Russia</div><div style="font-weight:600">4%</div>
+        </div>
+        <div style="flex:1;text-align:center;padding:6px;background:var(--bg-secondary);border-radius:6px">
+          <div style="color:var(--text-muted)">Bolivia</div><div style="font-weight:600">3%</div>
+        </div>
+        <div style="flex:1;text-align:center;padding:6px;background:var(--bg-secondary);border-radius:6px">
+          <div style="color:var(--text-muted)">Other</div><div style="font-weight:600">6%</div>
+        </div>
+      </div>
+      <div class="alert-item alert-warning" style="margin-top:12px;">
+        <div class="alert-icon">⚠️</div>
+        <div class="alert-text" style="font-size:11px;color:var(--amber)">China export restrictions enacted Q4 2024. Western supply critically constrained.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><span class="card-title">Demand Drivers</span></div>
+      <div style="font-size:12px;">
+        <div style="padding:10px 0;border-bottom:1px solid var(--border)">
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+            <span>Defense &amp; Aerospace</span>
+            <span style="color:var(--green)">▲ 24% YoY</span>
+          </div>
+          <div class="progress-bar"><div class="progress-fill" style="width:85%;background:var(--green)"></div></div>
+        </div>
+        <div style="padding:10px 0;border-bottom:1px solid var(--border)">
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+            <span>Semiconductor / Electronics</span>
+            <span style="color:var(--green)">▲ 18% YoY</span>
+          </div>
+          <div class="progress-bar"><div class="progress-fill" style="width:72%;background:var(--green)"></div></div>
+        </div>
+        <div style="padding:10px 0;border-bottom:1px solid var(--border)">
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+            <span>Industrial Tooling</span>
+            <span style="color:var(--blue)">▲ 8% YoY</span>
+          </div>
+          <div class="progress-bar"><div class="progress-fill" style="width:58%;background:var(--blue)"></div></div>
+        </div>
+        <div style="padding:10px 0;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+            <span>Energy / Nuclear</span>
+            <span style="color:var(--green)">▲ 15% YoY</span>
+          </div>
+          <div class="progress-bar"><div class="progress-fill" style="width:65%;background:var(--blue)"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><span class="card-title">AI Price Forecast</span><span class="card-badge badge-ai">ML MODEL v3.2</span></div>
+      <div style="text-align:center;padding:20px 0;">
+        <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px">Predicted APT Price</div>
+        <div style="font-family:'Syne';font-size:42px;font-weight:800;color:var(--green);margin:8px 0">$3,400</div>
+        <div style="font-size:13px;color:var(--text-secondary)">/MTU by Q2 2027</div>
+      </div>
+      <div style="font-size:12px;border-top:1px solid var(--border);padding-top:12px;">
+        <div style="display:flex;justify-content:space-between;padding:6px 0">
+          <span style="color:var(--text-muted)">Confidence</span>
+          <span style="color:var(--green);font-weight:600">87.3%</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:6px 0">
+          <span style="color:var(--text-muted)">Bull Case</span>
+          <span style="color:var(--green);font-weight:600">$4,200/MTU</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:6px 0">
+          <span style="color:var(--text-muted)">Bear Case</span>
+          <span style="color:var(--amber);font-weight:600">$2,800/MTU</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:6px 0">
+          <span style="color:var(--text-muted)">Key Driver</span>
+          <span style="color:var(--blue);font-weight:600">Supply Deficit</span>
+        </div>
+      </div>
+      <div style="margin-top:12px;padding:10px;background:rgba(16,185,129,0.08);border-radius:8px;font-size:11px;color:var(--green);text-align:center;">
+        ↑ Western defense spending + China export ban = structural deficit through 2030
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-watermark">POWERED BY TUNGSTEN AI™ INTELLIGENCE PLATFORM</div>
+</div>
+
+<!-- ═══════════ PAGE 6: DIGITAL TWIN ═══════════ -->
+<div class="page" id="page-6">
+  <div class="section-title">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
+    Digital Twin — MAX Mine
+  </div>
+
+  <div class="grid-2">
+    <div class="card" style="padding:0;overflow:hidden;">
+      <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-family:'Syne';font-weight:600;font-size:14px">3D Mine Visualization</span>
+        <span class="card-badge badge-live">● SYNCED</span>
+      </div>
+      <div class="mine-3d">
+        <div class="mine-scene">
+          <div class="mine-layer">
+            <!-- Surface -->
+            <div class="mine-surface"></div>
+            <!-- Underground levels -->
+            <div class="mine-level mine-level-1">
+              <div class="mine-tunnel" style="top:20px;left:30px;width:120px;height:16px"></div>
+              <div class="mine-tunnel" style="top:60px;left:80px;width:140px;height:16px"></div>
+              <div class="mine-tunnel" style="top:40px;left:60px;width:16px;height:56px"></div>
+              <div class="mine-sensor-3d" style="top:25px;left:80px"></div>
+              <div class="mine-sensor-3d" style="top:65px;left:160px"></div>
+              <div class="data-flow-line" style="top:28px;left:85px;width:40px;animation-delay:0s"></div>
+            </div>
+            <div class="mine-level mine-level-2">
+              <div class="mine-tunnel" style="top:30px;left:50px;width:160px;height:16px"></div>
+              <div class="mine-tunnel" style="top:70px;left:40px;width:100px;height:16px"></div>
+              <div class="mine-tunnel" style="top:30px;left:120px;width:16px;height:56px"></div>
+              <div class="mine-sensor-3d" style="top:35px;left:120px"></div>
+              <div class="mine-sensor-3d" style="top:75px;left:100px"></div>
+              <div class="data-flow-line" style="top:38px;left:125px;width:50px;animation-delay:1s"></div>
+            </div>
+            <div class="mine-level mine-level-3">
+              <div class="mine-tunnel" style="top:40px;left:60px;width:140px;height:16px"></div>
+              <div class="mine-tunnel" style="top:80px;left:90px;width:80px;height:16px"></div>
+              <div class="mine-sensor-3d" style="top:45px;left:140px"></div>
+              <div class="mine-sensor-3d" style="top:85px;left:130px;animation-delay:1.5s"></div>
+              <div class="data-flow-line" style="top:48px;left:145px;width:30px;animation-delay:2s"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Labels overlaid on the 3D view -->
+        <div class="twin-label" style="top:15%;left:10%">Surface: 1,842m ASL</div>
+        <div class="twin-label" style="top:40%;left:8%">Level 1: 1,540m</div>
+        <div class="twin-label" style="top:58%;left:8%">Level 2: 1,380m</div>
+        <div class="twin-label" style="top:76%;left:8%">Level 3: 1,220m</div>
+        <div class="twin-label" style="top:15%;right:10%;color:var(--cyan)">● 6 Active Sensors</div>
+      </div>
+    </div>
+
+    <div class="card" style="padding:0;overflow:hidden;">
+      <div style="padding:16px 20px;border-bottom:1px solid var(--border);">
+        <span style="font-family:'Syne';font-weight:600;font-size:14px">Cross-Section View — Looking North</span>
+      </div>
+      <div class="cross-section">
+        <!-- Layer labels -->
+        <div class="cs-label" style="top:2%">Overburden</div>
+        <div class="cs-label" style="top:15%">Diorite Sill</div>
+        <div class="cs-label" style="top:38%">Limestone</div>
+        <div class="cs-label" style="top:62%">Skarn Zone</div>
+        <div class="cs-label" style="top:82%">Granodiorite</div>
+
+        <!-- Tunnels -->
+        <div class="cs-tunnel" style="top:12%;left:20%;width:35%;height:5%"></div>
+        <div class="cs-tunnel" style="top:35%;left:25%;width:40%;height:5%"></div>
+        <div class="cs-tunnel" style="top:55%;left:15%;width:50%;height:5%"></div>
+        <div class="cs-tunnel" style="top:73%;left:30%;width:30%;height:5%"></div>
+
+        <!-- Vertical shaft -->
+        <div class="cs-tunnel" style="top:12%;left:42%;width:4%;height:66%"></div>
+
+        <!-- Ore bodies -->
+        <div class="cs-ore" style="top:48%;left:18%;width:20%;height:12%"></div>
+        <div class="cs-ore" style="top:52%;left:50%;width:15%;height:10%"></div>
+        <div class="cs-ore" style="top:65%;left:32%;width:12%;height:8%"></div>
+
+        <!-- Sensors -->
+        <div class="cs-sensor" style="top:14%;left:35%"></div>
+        <div class="cs-sensor" style="top:37%;left:45%"></div>
+        <div class="cs-sensor" style="top:57%;left:30%" style="animation-delay:0.5s"></div>
+        <div class="cs-sensor" style="top:57%;left:55%"></div>
+        <div class="cs-sensor" style="top:75%;left:42%"></div>
+
+        <!-- Drill hole -->
+        <div style="position:absolute;top:0;left:55%;width:2px;height:77%;background:linear-gradient(180deg,var(--amber),transparent);opacity:0.5"></div>
+        <div style="position:absolute;top:76%;left:calc(55% - 4px);width:10px;height:10px;background:var(--amber);border-radius:50%;box-shadow:0 0 10px var(--amber-glow);">
+          <div style="position:absolute;inset:-4px;border:1px solid var(--amber);border-radius:50%;animation:target-pulse 2s infinite;"></div>
+        </div>
+        <div class="twin-label" style="top:76%;left:60%;color:var(--amber)">Active Drill — 847m</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-3">
+    <div class="card">
+      <div class="card-header"><span class="card-title">Sensor Network Status</span></div>
+      <div style="font-size:12px;">
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)">
+          <span style="color:var(--text-muted)">Temperature Probes</span>
+          <span style="color:var(--green)">247 / 247 Online</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)">
+          <span style="color:var(--text-muted)">Pressure Gauges</span>
+          <span style="color:var(--green)">189 / 189 Online</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)">
+          <span style="color:var(--text-muted)">Seismic Sensors</span>
+          <span style="color:var(--green)">312 / 312 Online</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)">
+          <span style="color:var(--text-muted)">Gas Detectors</span>
+          <span style="color:var(--green)">156 / 156 Online</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)">
+          <span style="color:var(--text-muted)">Strain Gauges</span>
+          <span style="color:var(--green)">198 / 198 Online</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0">
+          <span style="color:var(--text-muted)">Environmental</span>
+          <span style="color:var(--green)">145 / 145 Online</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><span class="card-title">Real-Time Data Flow</span></div>
+      <div style="font-size:12px;">
+        <div style="text-align:center;margin-bottom:16px;">
+          <div style="font-family:'Syne';font-size:32px;font-weight:700;color:var(--cyan)" id="dataPoints">2.4M</div>
+          <div style="font-size:11px;color:var(--text-muted)">Data points processed / hour</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)">
+          <span style="color:var(--text-muted)">Ingestion Rate</span>
+          <span style="color:var(--cyan)">667 pts/sec</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)">
+          <span style="color:var(--text-muted)">Latency</span>
+          <span style="color:var(--green)">12ms avg</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)">
+          <span style="color:var(--text-muted)">Model Inference</span>
+          <span style="color:var(--green)">45ms p99</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:6px 0">
+          <span style="color:var(--text-muted)">Uptime</span>
+          <span style="color:var(--green)">99.97%</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><span class="card-title">Twin Model Accuracy</span></div>
+      <div style="font-size:12px;">
+        <div style="text-align:center;margin-bottom:16px;">
+          <div style="font-family:'Syne';font-size:32px;font-weight:700;color:var(--green)">97.2%</div>
+          <div style="font-size:11px;color:var(--text-muted)">Model vs. actual correlation</div>
+        </div>
+        <div style="padding:6px 0;border-bottom:1px solid var(--border)">
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+            <span style="color:var(--text-muted)">Geological Prediction</span>
+            <span style="color:var(--green)">98.1%</span>
+          </div>
+          <div class="progress-bar"><div class="progress-fill" style="width:98.1%;background:var(--green)"></div></div>
+        </div>
+        <div style="padding:6px 0;border-bottom:1px solid var(--border)">
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+            <span style="color:var(--text-muted)">Structural Model</span>
+            <span style="color:var(--green)">96.8%</span>
+          </div>
+          <div class="progress-bar"><div class="progress-fill" style="width:96.8%;background:var(--green)"></div></div>
+        </div>
+        <div style="padding:6px 0;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+            <span style="color:var(--text-muted)">Fluid Flow</span>
+            <span style="color:var(--green)">96.7%</span>
+          </div>
+          <div class="progress-bar"><div class="progress-fill" style="width:96.7%;background:var(--green)"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-watermark">POWERED BY TUNGSTEN AI™ INTELLIGENCE PLATFORM</div>
+</div>
+
+</main>
+
+<script>
+// ─── NAVIGATION ───
+function showPage(idx) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item[data-page]').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + idx).classList.add('active');
+  document.querySelector('.nav-item[data-page="' + idx + '"]').classList.add('active');
+}
+
+// ─── CLOCK ───
+function updateClock() {
+  const now = new Date();
+  const pad = n => String(n).padStart(2, '0');
+  const ts = now.getUTCFullYear() + '-' + pad(now.getUTCMonth()+1) + '-' + pad(now.getUTCDate()) + ' ' +
+    pad(now.getUTCHours()) + ':' + pad(now.getUTCMinutes()) + ':' + pad(now.getUTCSeconds()) + ' UTC';
+  document.getElementById('headerTime').textContent = ts;
+  const local = pad(now.getHours()) + ':' + pad(now.getMinutes()) + ':' + pad(now.getSeconds());
+  const geoTs = document.getElementById('geoTimestamp');
+  if (geoTs) geoTs.textContent = local;
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// ─── SENSOR FEED ───
+const sensorTypes = ['TEMP', 'PRES', 'RPM', 'TORQ', 'VIBR', 'FLOW', 'WOB', 'MUD_WT'];
+const sensorRanges = {
+  TEMP: [128, 158, '°C'], PRES: [2600, 3100, ' PSI'], RPM: [110, 140, ' RPM'],
+  TORQ: [15, 22, ' kN·m'], VIBR: [0.2, 1.8, ' g'], FLOW: [380, 440, ' L/min'],
+  WOB: [12, 28, ' klb'], MUD_WT: [1.28, 1.38, ' sg']
+};
+
+function addSensorRow(containerId) {
+  const feed = document.getElementById(containerId);
+  if (!feed) return;
+  const type = sensorTypes[Math.floor(Math.random() * sensorTypes.length)];
+  const range = sensorRanges[type];
+  const val = (range[0] + Math.random() * (range[1] - range[0])).toFixed(1) + range[2];
+  const now = new Date();
+  const time = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0') + ':' + String(now.getSeconds()).padStart(2,'0');
+  const row = document.createElement('div');
+  row.className = 'sensor-row';
+  row.innerHTML = '<span class="sensor-time">' + time + '</span><span class="sensor-type">' + type + '</span><span class="sensor-val">' + val + '</span>';
+  feed.prepend(row);
+  if (feed.children.length > 20) feed.removeChild(feed.lastChild);
+}
+
+// Populate initial data
+for (let i = 0; i < 8; i++) { addSensorRow('sensorFeed'); addSensorRow('dashFeed'); }
+setInterval(() => addSensorRow('sensorFeed'), 2200);
+setInterval(() => addSensorRow('dashFeed'), 3100);
+
+// ─── GAUGE ANIMATION ───
+function animateGauges() {
+  const r = (min, max) => min + Math.random() * (max - min);
+  const tempVal = r(128, 158);
+  const presVal = r(2600, 3100);
+  const rpmVal = r(110, 140);
+  const torqueVal = r(15, 22);
+
+  // Needle range: -90deg (left) to 90deg (right)
+  const tempDeg = -90 + (tempVal - 100) / 80 * 180;
+  const presDeg = -90 + (presVal - 2000) / 2000 * 180;
+  const rpmDeg = -90 + (rpmVal - 80) / 100 * 180;
+  const torqueDeg = -90 + (torqueVal - 10) / 20 * 180;
+
+  document.getElementById('needle-temp').style.transform = 'rotate(' + tempDeg + 'deg)';
+  document.getElementById('needle-pressure').style.transform = 'rotate(' + presDeg + 'deg)';
+  document.getElementById('needle-rpm').style.transform = 'rotate(' + rpmDeg + 'deg)';
+  document.getElementById('needle-torque').style.transform = 'rotate(' + torqueDeg + 'deg)';
+
+  document.getElementById('val-temp').textContent = tempVal.toFixed(0) + '°C';
+  document.getElementById('val-pressure').textContent = presVal.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' PSI';
+  document.getElementById('val-rpm').textContent = rpmVal.toFixed(0) + ' RPM';
+  document.getElementById('val-torque').textContent = torqueVal.toFixed(1) + ' kN·m';
+}
+setInterval(animateGauges, 3000);
+animateGauges();
+
+// ─── DEPTH ANIMATION ───
+let currentDepth = 847;
+function animateDepth() {
+  currentDepth += (Math.random() * 0.3 - 0.05);
+  if (currentDepth > 1100) currentDepth = 1100;
+  const pct = (currentDepth / 1100 * 100).toFixed(1);
+  document.getElementById('depthProgress').style.height = pct + '%';
+  document.getElementById('depthBit').style.top = pct + '%';
+  document.getElementById('currentDepth').textContent = Math.floor(currentDepth) + 'm';
+  document.getElementById('ropVal').textContent = (3.8 + Math.random() * 1.2).toFixed(1) + ' m/hr';
+}
+setInterval(animateDepth, 5000);
+
+// ─── MAP INTERACTIVITY ───
+const geoMap = document.getElementById('geoMap');
+if (geoMap) {
+  geoMap.addEventListener('mousemove', function(e) {
+    const rect = geoMap.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width * 0.1 + 49.1).toFixed(4);
+    const y = ((e.clientY - rect.top) / rect.height * 0.1 + 116.8).toFixed(4);
+    const elev = Math.floor(1800 + Math.random() * 100);
+    document.getElementById('mapCoords').textContent = x + '°N, ' + y + '°W — Elev: ' + elev.toLocaleString() + 'm';
+  });
+}
+
+// ─── SUBTLE NUMBER FLUCTUATION ───
+setInterval(() => {
+  const sensors = 1240 + Math.floor(Math.random() * 15);
+  document.getElementById('metricSensors').textContent = sensors.toLocaleString();
+}, 8000);
+
+// ─── KEYBOARD NAV ───
+document.addEventListener('keydown', function(e) {
+  if (e.key >= '1' && e.key <= '7') {
+    showPage(parseInt(e.key) - 1);
+  }
+});
+</script>
+</body>
+</html>
